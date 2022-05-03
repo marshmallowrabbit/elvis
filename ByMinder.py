@@ -4,7 +4,7 @@ import numpy as np
 import time
 import sys
 
-ids = ['ftx'] #,'mexc','gateio','huobi','binance','ascendex','hitbtc','poloniex','kraken','cex','kucoin','gemini','digifinex','bitfinex','bkex'
+ids = ['ftx','binance'] #,'ascendex','mexc','gateio','huobi'
 
 def dump(*args):
     print(' '.join([str(arg) for arg in args]))
@@ -20,7 +20,7 @@ def askbid(id,symbol):
     df1 = pd.DataFrame()
     df1[['asks','asks q']] = pd.DataFrame(df.asks.tolist(), index= df.index)
     df1[['bids','bids q']] = pd.DataFrame(df.bids.tolist(), index= df.index)
-    askbid = df1[['asks','bids']].iloc[0]
+    askbid = [df1.asks.iloc[0], df1.bids.iloc[0]]
     return askbid
 
 proxies = [
@@ -77,6 +77,7 @@ dump('Loaded all markets')
 
 allSymbols = [symbol for id in ids for symbol in exchanges[id].symbols]
 
+# get all unique symbols
 uniqueSymbols = list(set(allSymbols))
 
 # filter out symbols that are not present on at least two exchanges
@@ -87,7 +88,7 @@ dfT = []
 for id in ids:
     for symbol in arbitrableSymbols:
         if symbol in exchanges[id].symbols:
-            dfT.append(symbol)
+            dfT.append(askbid(exchanges[id],symbol))
         else:
             dfT.append('')
     dfT = pd.DataFrame(dfT)
