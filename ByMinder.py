@@ -62,3 +62,23 @@ for id in ids:  # load all markets from all exchange exchanges
 dump('Loaded all markets')
 
 allSymbols = [symbol for id in ids for symbol in exchanges[id].symbols]
+
+uniqueSymbols = list(set(allSymbols))
+
+# filter out symbols that are not present on at least two exchanges
+arbitrableSymbols = sorted([symbol for symbol in uniqueSymbols if allSymbols.count(symbol) > 1])
+
+df = pd.DataFrame(arbitrableSymbols)
+dfT = []
+for id in ids:
+    for symbol in arbitrableSymbols:
+        if symbol in exchanges[id].symbols:
+            dfT.append(symbol)
+        else:
+            dfT.append('')
+    dfT = pd.DataFrame(dfT)
+    df[id] = pd.concat([dfT],axis=1)
+    dfT = []
+
+pd.set_option('display.max_rows', df.shape[0]+1)
+print(df)
