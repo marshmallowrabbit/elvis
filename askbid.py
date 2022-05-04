@@ -9,11 +9,17 @@ def test(id, symbol):
     
 def askbid(id,symbol):
     orderbook = test(id,symbol)
-    df = pd.DataFrame(orderbook, columns = ['asks','bids'])
+    df = pd.DataFrame(orderbook)
+    del df['nonce']
+    del df['timestamp']
+    del df['datetime']
+    del df['symbol']
     df1 = pd.DataFrame()
-    df1[['asks','asks q']] = pd.DataFrame(df.asks.tolist(), index= df.index)
-    df1[['bids','bids q']] = pd.DataFrame(df.bids.tolist(), index= df.index)
-    askbid = df1[['asks','bids']].iloc[0]
+    df1[['ask','asks q']] = pd.DataFrame(df.asks.tolist(),index=df.index)
+    df1[['bid','bids q']] = pd.DataFrame(df.bids.tolist(),index=df.index)
+    del df1['asks q']
+    del df1['bids q']
+    askbid = df1.iat[0,0]
     return askbid
 id = ccxt.ftx()
 symbol = 'BTC/USDT'
