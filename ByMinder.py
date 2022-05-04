@@ -4,7 +4,7 @@ import numpy as np
 import time
 import sys
 
-ids = ['ftx','binance'] #,'ascendex','mexc','gateio','huobi'
+ids = ['ftx'] #,'ascendex','mexc','gateio','huobi'
 
 def dump(*args):
     print(' '.join([str(arg) for arg in args]))
@@ -16,18 +16,19 @@ def test(id, symbol):
     
 def askbid(id,symbol):
     orderbook = test(id,symbol)
-    df = pd.DataFrame(orderbook, columns = ['asks','bids'])
+    df = pd.DataFrame(orderbook)
+    del df['nonce']
+    del df['timestamp']
+    del df['datetime']
+    del df['symbol']
     df1 = pd.DataFrame()
-    df1[['asks','asks q']] = pd.DataFrame(df.asks.tolist(), index= df.index)
-    df1[['bids','bids q']] = pd.DataFrame(df.bids.tolist(), index= df.index)
-    askbid = [df1.asks.iloc[0], df1.bids.iloc[0]]
+    df1[['ask','asks q']] = pd.DataFrame(df.asks.tolist(),index=df.index)
+    df1[['bid','bids q']] = pd.DataFrame(df.bids.tolist(),index=df.index)
+    del df1['asks q']
+    del df1['bids q']
+    askbid = df1.iat[0,0]
     return askbid
-
-proxies = [
-    '',  # no proxy by default
-    'https://crossorigin.me/',
-    'https://cors-anywhere.herokuapp.com/',
-]
+proxies = ['']
 
 exchanges = {}
 for id in ids:  # load all markets from all exchange exchanges
@@ -76,24 +77,25 @@ for id in ids:  # load all markets from all exchange exchanges
 dump('Loaded all markets')
 
 allSymbols = [symbol for id in ids for symbol in exchanges[id].symbols]
-
-# get all unique symbols
-uniqueSymbols = list(set(allSymbols))
-
-# filter out symbols that are not present on at least two exchanges
-arbitrableSymbols = sorted([symbol for symbol in uniqueSymbols if allSymbols.count(symbol) > 1])
-
-df = pd.DataFrame(arbitrableSymbols)
-dfT = []
+df = pd.DataFrame(allSymbols)
+dfA = []
+dfB = []
 for id in ids:
-    for symbol in arbitrableSymbols:
+    dfA = pd.DataFrame(dfA)
+    dfB = pd.DataFrame(dfB)
+    for symbol in allSymbols:
+    
         if symbol in exchanges[id].symbols:
-            dfT.append(askbid(exchanges[id],symbol))
+            dfA = pd.concat(symbol)
+            dfB = pd.concat(symbol)
         else:
-            dfT.append('')
-    dfT = pd.DataFrame(dfT)
-    df[id] = pd.concat([dfT],axis=1)
-    dfT = []
+            dfA.append('')
+            dfB.append('')
+    
+    df[['{}asks'.format(id),'{}bids'.format(id)]] = pd.concat([[dfA,dfB]],axis=1)
+    dfA = []
+    dfB = []
 
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
+
