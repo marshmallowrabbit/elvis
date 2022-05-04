@@ -26,8 +26,9 @@ def askbid(id,symbol):
     df1[['bid','bids q']] = pd.DataFrame(df.bids.tolist(),index=df.index)
     del df1['asks q']
     del df1['bids q']
-    askbid = df1.iat[0,0]
-    return askbid
+    ask = df1.iat[0,0]
+    bid = df1.iat[0,1]
+    return ask, bid
 proxies = ['']
 
 exchanges = {}
