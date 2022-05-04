@@ -11,7 +11,6 @@ def dump(*args):
     
 def test(id, symbol):
     orderbook = id.fetch_order_book(symbol)
-    # exchange.close()
     return orderbook
     
 def askbid(id,symbol):
@@ -29,52 +28,29 @@ def askbid(id,symbol):
     ask = df1.iat[0,0]
     bid = df1.iat[0,1]
     return ask, bid
-proxies = ['']
 
 exchanges = {}
-for id in ids:  # load all markets from all exchange exchanges
-
-    # instantiate the exchange by id
+for id in ids:
     exchange = getattr(ccxt, id)()
-
-    # save it in a dictionary under its id for future use
-
     exchanges[id] = exchange
-
-    # load all markets from the exchange
     markets = exchange.load_markets()
-
-    # basic round-robin proxy scheduler
-    currentProxy = -1
-    maxRetries = len(proxies)
-
-    for numRetries in range(0, maxRetries):
-
-        # try proxies in round-robin fashion
-        currentProxy = (currentProxy + 1) % len(proxies)
-
-        try:  # try to load exchange markets using current proxy
-
-            exchange.proxy = proxies[currentProxy]
-            exchange.load_markets()
-
-        except ccxt.DDoSProtection as e:
-            dump(type(e).__name__, e.args)
-        except ccxt.RequestTimeout as e:
-            dump(type(e).__name__, e.args)
-        except ccxt.AuthenticationError as e:
-            dump(type(e).__name__, e.args)
-        except ccxt.ExchangeNotAvailable as e:
-            dump(type(e).__name__, e.args)
-        except ccxt.ExchangeError as e:
-            dump(type(e).__name__, e.args)
-        except ccxt.NetworkError as e:
-            dump(type(e).__name__, e.args)
-        except Exception as e:  # reraise all other exceptions
-            raise
-
+    try:
+        exchange.load_markets()
+    except ccxt.DDoSProtection as e:
+        dump(type(e).__name__, e.args)
+    except ccxt.RequestTimeout as e:
+        dump(type(e).__name__, e.args)
+    except ccxt.AuthenticationError as e:
+        dump(type(e).__name__, e.args)
+    except ccxt.ExchangeNotAvailable as e:
+        dump(type(e).__name__, e.args)
+    except ccxt.ExchangeError as e:
+        dump(type(e).__name__, e.args)
+    except ccxt.NetworkError as e:
+        dump(type(e).__name__, e.args)
+    except Exception as e:  # reraise all other exceptions
+        raise
     dump((id), 'loaded', str(len(exchange.symbols)), 'markets')
-
 dump('Loaded all markets')
 
 allSymbols = [symbol for id in ids for symbol in exchanges[id].symbols]
@@ -83,10 +59,10 @@ dfA = []
 dfB = []
 for id in ids:
     for symbol in allSymbols:
-    
         if symbol in exchanges[id].symbols:
-            dfA.append(symbol)
-            dfB.append(symbol)
+            ask, bid = askbid(exchanges[id], symbol)
+            dfA.append(ask)
+            dfB.append(bid)
         else:
             dfA.append('')
             dfB.append('')
@@ -100,4 +76,5 @@ for id in ids:
 
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
+
 
