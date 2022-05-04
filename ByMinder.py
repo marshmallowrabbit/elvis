@@ -77,4 +77,14 @@ for id in ids:
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
 
+# for id in ids:
+#     for symbol in allSymbols:
+#         ask, bid = askbid(exchanges[id], symbol)
+#         dfA.append(ask)
+#         dfB.append(bid)            
+            
+#     dfA = pd.DataFrame(dfA)
+#     dfB = pd.DataFrame(dfB)
+#     df['{} ask'.format(id)] = pd.concat([dfA],axis=1)
+#     df['{} bid'.format(id)] = pd.concat([dfB],axis=1)
 
