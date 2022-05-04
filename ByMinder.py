@@ -81,18 +81,19 @@ df = pd.DataFrame(allSymbols)
 dfA = []
 dfB = []
 for id in ids:
-    dfA = pd.DataFrame(dfA)
-    dfB = pd.DataFrame(dfB)
     for symbol in allSymbols:
     
         if symbol in exchanges[id].symbols:
-            dfA = pd.concat(symbol)
-            dfB = pd.concat(symbol)
+            dfA.append(symbol)
+            dfB.append(symbol)
         else:
             dfA.append('')
             dfB.append('')
-    
-    df[['{}asks'.format(id),'{}bids'.format(id)]] = pd.concat([[dfA,dfB]],axis=1)
+            
+    dfA = pd.DataFrame(dfA)
+    dfB = pd.DataFrame(dfB)
+    df['{} ask'.format(id)] = pd.concat([dfA],axis=1)
+    df['{} bid'.format(id)] = pd.concat([dfB],axis=1)
     dfA = []
     dfB = []
 
