@@ -67,16 +67,17 @@ for id in ids:
     dfA = []
     dfB = []
     
-#bid - price to buy at
-#ask - price to sell at
-df['buy at exchange'] = df.filter(like='bid').idxmin(axis=1)
-df['buy at exchange'] = df['buy at exchange'].str.replace('bid', '')
-df['best bid'] = df.filter(like='bid').min(axis=1) 
-df['sell at exchange'] = df.filter(like='ask').idxmax(axis=1)
-df['sell at exchange'] = df['sell at exchange'].str.replace('ask', '')
-df['best ask'] = df.filter(like='ask').max(axis=1) 
+#ask - price to buy at
+#bid - price to sell at
+df['exchange(buy)'] = df.filter(like='ask').idxmin(axis=1)
+df['exchange(buy)'] = df['exchange(buy)'].str.replace('ask', '')
+df['best ask'] = df.filter(like='ask').min(axis=1) 
+df['exchange(sell)'] = df.filter(like='bid').idxmax(axis=1)
+df['exchange(sell)'] = df['exchange(sell)'].str.replace('bid', '')
+df['best bid'] = df.filter(like='bid').max(axis=1) 
 
-df['percentage gain'] = df.apply(lambda row: ((row['best ask']*100)/row['best bid']) - 100, axis=1)
+
+df['percentage gain'] = df.apply(lambda row: ((row['best bid']*100)/row['best ask']) - 100, axis=1)
 df = df.sort_values(by=['percentage gain'], ascending=False)
 
 
