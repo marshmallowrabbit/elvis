@@ -4,7 +4,7 @@ import numpy as np
 import time
 import sys
 
-ids = ['ftx'] #,'ascendex','mexc','gateio','huobi'
+ids = ['ftx','binance'] #,'ascendex','mexc','gateio','huobi'
 
 def dump(*args):
     print(' '.join([str(arg) for arg in args]))
@@ -39,13 +39,17 @@ for id in ids:
         raise
     dump((id), 'loaded', str(len(exchange.symbols)), 'markets')
 dump('Loaded all markets')
+    
 
 allSymbols = [symbol for id in ids for symbol in exchanges[id].symbols]
-df = pd.DataFrame(allSymbols)
+uniqueSymbols = list(set(allSymbols))
+arbitrableSymbols = sorted([symbol for symbol in uniqueSymbols if allSymbols.count(symbol) > 1])
+
+df = pd.DataFrame(arbitrableSymbols)
 dfA = []
 dfB = []
 for id in ids:
-    for symbol in allSymbols:
+    for symbol in arbitrableSymbols:
         if symbol in exchanges[id].symbols:
             ask, bid = askbid(exchanges[id], symbol)
             dfA.append(ask)
@@ -64,14 +68,4 @@ for id in ids:
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
 
-# for id in ids:
-#     for symbol in allSymbols:
-#         ask, bid = askbid(exchanges[id], symbol)
-#         dfA.append(ask)
-#         dfB.append(bid)            
-            
-#     dfA = pd.DataFrame(dfA)
-#     dfB = pd.DataFrame(dfB)
-#     df['{} ask'.format(id)] = pd.concat([dfA],axis=1)
-#     df['{} bid'.format(id)] = pd.concat([dfB],axis=1)
 
