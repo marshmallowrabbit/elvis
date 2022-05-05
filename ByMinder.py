@@ -71,7 +71,7 @@ for id in ids:
 #ask - price to sell at
 df['buy at exchange'] = df.filter(like='bid').idxmin(axis=1)
 df['buy at exchange'] = df['buy at exchange'].str.replace('bid', '')
-df['best bid'] = df.filter(like='bid').max(axis=1) 
+df['best bid'] = df.filter(like='bid').min(axis=1) 
 df['sell at exchange'] = df.filter(like='ask').idxmax(axis=1)
 df['sell at exchange'] = df['sell at exchange'].str.replace('ask', '')
 df['best ask'] = df.filter(like='ask').max(axis=1) 
