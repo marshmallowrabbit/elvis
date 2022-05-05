@@ -20,7 +20,7 @@ def askbid(id,symbol):
     del df1['asks q']
     del df1['bids q']
     ask = df1.iat[0,0]
-    bid = df1.iat[1,0]
+    bid = df1.iat[0,1]
     return ask, bid
 id = ccxt.ftx()
 symbol = 'BTC/USDT'
