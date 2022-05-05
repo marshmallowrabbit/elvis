@@ -1,6 +1,5 @@
 import ccxt
 import pandas as pd
-import numpy as np
 import time
 import sys
 
@@ -13,6 +12,7 @@ def askbid(id,symbol):
     orderbook = id.fetch_order_book(symbol, limit = 1)
     s = pd.Series(orderbook)
     s = s[['asks','bids']]
+    global ask, bid
     for a in s.asks:
         ask = a[0] 
     for b in s.bids:
@@ -60,7 +60,6 @@ for id in ids:
         else:
             dfA.append('')
             dfB.append('')
-            
     dfA = pd.DataFrame(dfA)
     dfB = pd.DataFrame(dfB)
     df['{} ask'.format(id)] = pd.concat([dfA],axis=1)
@@ -68,7 +67,6 @@ for id in ids:
     dfA = []
     dfB = []
 
+
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
-
-
