@@ -76,6 +76,8 @@ df['sell at exchange'] = df.filter(like='ask').idxmax(axis=1)
 df['sell at exchange'] = df['sell at exchange'].str.replace('ask', '')
 df['best ask'] = df.filter(like='ask').max(axis=1) 
 
+df['percentage gain'] = df.apply(lambda row: ((row['best ask']*100)/row['best bid']) - 100, axis=1)
+
 
 pd.set_option('display.max_rows', df.shape[0]+1)
 print(df)
